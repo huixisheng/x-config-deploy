@@ -1,6 +1,6 @@
 {
   "name": "x-config-deploy",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "build config ",
   "main": "index.js",
   "scripts": {
@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/huixisheng/x-config-deploy/issues"
   },
-  "homepage": "https://github.com/huixisheng/x-config-deploy#readme"
+  "homepage": "https://github.com/huixisheng/x-config-deploy#readme",
+  "dependencies": {
+    "fs-extra": "^4.0.0"
+  }
 }
