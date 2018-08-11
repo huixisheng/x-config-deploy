@@ -1,10 +1,16 @@
 {
   "name": "x-config-deploy",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "build config ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run eslint && ./node_modules/mocha/bin/mocha --timeout 30000",
+    "test:watch": "npm run eslint && ./node_modules/mocha/bin/mocha --watch  --timeout 30000",
+    "dev": "npm run test:watch",
+    "eslint:diff": "node_modules/eslint/bin/eslint.js --color $(git diff-index HEAD --name-only --diff-filter ACMR |grep '\\.\\(jsx\\|es6\\|js\\|vue\\)$')",
+    "eslint:fix": "cross-env NODE_ENV=production node_modules/eslint/bin/eslint.js --fix --color --max-warnings 10 --ext .js,.vue static src build config test index.js",
+    "eslint": "cross-env NODE_ENV=production node_modules/eslint/bin/eslint.js --color --max-warnings 10 --ext .js,.vue static src build config test index.js",
+    "commitmsg": "commitlint -e $GIT_PARAMS"
   },
   "repository": {
     "type": "git",
@@ -20,6 +26,41 @@
   },
   "homepage": "https://github.com/huixisheng/x-config-deploy#readme",
   "dependencies": {
-    "fs-extra": "^4.0.0"
+    "chalk": "^2.4.1",
+    "debug": "^3.1.0",
+    "dotenv": "^6.0.0",
+    "fs-extra": "^7.0.0",
+    "get-value": "^3.0.1",
+    "is": "^3.2.1",
+    "json5": "^1.0.1",
+    "mixin-object": "^3.0.0",
+    "osenv": "^0.1.5",
+    "pretty-error": "^2.1.1",
+    "set-value": "^3.0.0",
+    "unset-value": "^1.0.0",
+    "user-home": "^2.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run eslint"
+    }
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^7.0.0",
+    "@commitlint/config-angular": "^7.0.1",
+    "babel-core": "^6.0.0",
+    "babel-eslint": "^8.2.2",
+    "babel-plugin-transform-runtime": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-2": "^6.22.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "cross-env": "^5.0.5",
+    "eslint": "^4.18.2",
+    "eslint-config-style-guide": "0.0.6",
+    "eslint-friendly-formatter": "^4.0.1",
+    "eslint-import-resolver-webpack": "^0.10.1",
+    "husky": "^1.0.0-rc.1",
+    "mocha": "^5.0.4"
   }
 }

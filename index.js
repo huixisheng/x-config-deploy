@@ -2,38 +2,119 @@ const path = require('path');
 const fs = require('fs');
 const fse = require('fs-extra');
 const util = require('util');
+const getValue = require('get-value');
+// const setValue = require('set-value');
+// const userHome = require('user-home');
+const debug = require('debug');
+const mixin = require('mixin-object');
+const is = require('is');
+const chalk = require('chalk');
+const dotenv = require('dotenv');
+const PrettyError = require('pretty-error');
 
+const pe = new PrettyError();
+const cwd = process.cwd();
+const dirname = __dirname;
 function getUserHome() {
-  var userHomeDir = process.env.HOME || process.env.USERPROFILE;
+  let userHomeDir = process.env.HOME || process.env.USERPROFILE;
   if (!userHomeDir) {
     userHomeDir = process.env.HOMEDRIVE + process.env.HOMEPATH;
   }
   return userHomeDir;
 }
 
-var configFile = path.join(getUserHome(), '.xconfig/config.js');
+const userHomeConfigPath = path.join(getUserHome(), '.xconfig/config.js');
+const cwdConfigPath = path.join(cwd, '.xconfig.js');
+const cwdEnvPath = path.join(cwd, '.env');
+// const debugMode = process.env.xconfig || '';
 
-function getConfig() {
-  var configDefault = path.join(__dirname, 'config/default.js');
-  if (!fs.existsSync(configFile)) {
-    fse.copySync(configDefault, configFile);
-    // console.log('%s 不存在', configFile);
-    // process.exit(1);
+const HITN_TEXT = {
+  init: `请配置相关的文件\n${userHomeConfigPath}\n或者${cwdConfigPath}\n或者${cwdEnvPath}`,
+  emptyKey: `请配置相关的文件\n${userHomeConfigPath}\n或者${cwdConfigPath}\n或者${cwdEnvPath}\n%s`,
+};
+
+class Config {
+  constructor() {
+    this.getConfigValues();
+    // console.dir(configValues);
   }
-  return require(configFile)
+
+  getConfig() {
+    return this.getConfigValues();
+  }
+
+  getConfigValues() {
+    let result = {};
+    if (fs.existsSync(userHomeConfigPath)) {
+      result = mixin(result, this.require(userHomeConfigPath));
+    }
+    if (fs.existsSync(cwdEnvPath)) {
+      result = mixin(result, this.parseEnv(cwdEnvPath));
+    }
+    if (fs.existsSync(cwdConfigPath)) {
+      result = mixin(result, this.require(cwdConfigPath));
+    }
+    if (is.empty(result)) {
+      console.error(chalk.red(HITN_TEXT['init']));
+      process.exit(1);
+    }
+    return result;
+  }
+
+  parseEnv(fielpath) {
+    const result = dotenv.config({ path: fielpath }).parsed;
+    return result;
+  }
+
+  set(key, value) {
+
+  }
+
+  get(key) {
+    const configValues = this.getConfigValues();
+    const value = getValue(configValues, key);
+    if (!value) {
+      console.error(chalk.red(HITN_TEXT['emptyKey']), key);
+      throw new Error('empty key');
+    }
+    return value;
+  }
+
+  log(text, moduleName) {
+
+  }
+
+  error(text, moduleName) {
+
+  }
+
+  require(filepath) {
+    let result;
+    try {
+      // eslint-disable-next-line
+      result = require(filepath);
+    } catch (error) {
+      console.error(pe.render(error));
+    }
+    return result;
+  }
 }
 
-function setConfig(content) {
-  if (util.isObject(content)) {
-    content = JSON.stringify(content, null, '\t');
-  }
-  const writeContent = `module.exports = ${content}`
-  fs.writeFileSync(configFile, writeContent);
-}
+// .xconfig.js   || .env || .xconfig.js
+// userHoem/.xconfig/config.js
 
+const instanceConfig = new Config();
+
+module.exports = instanceConfig;
 exports.getUserHome = getUserHome;
-exports.getConfig = getConfig;
-exports.setConfig = setConfig;
+
+// function setConfig(content) {
+//   if (util.isObject(content)) {
+//     content = JSON.stringify(content, null, '\t');
+//   }
+//   const writeContent = `module.exports = ${content}`
+//   fs.writeFileSync(configFile, writeContent);
+// }
 
 /**
  * @todo
