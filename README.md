@@ -1,2 +1,14 @@
 # x-config-deploy
-用于构建相关的配置，敏感信息不添加到项目中。
+> 用于项目构建的配置。
+
+## install ##
+```
+$ npm install x-config-deploy -g
+```
+
+## usage ##
+```
+const configDeploy = require('x-config-deploy');
+configDeploy.getConfig();
+configDeploy.get('a.b');
+```
