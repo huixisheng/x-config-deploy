@@ -75,7 +75,8 @@ class Config {
     const value = getValue(configValues, key);
     if (!value) {
       console.error(chalk.red(HITN_TEXT['emptyKey']), key);
-      throw new Error('empty key');
+      return '';
+      // throw new Error('empty key');
     }
     return value;
   }
