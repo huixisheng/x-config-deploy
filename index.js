@@ -29,8 +29,8 @@ const cwdEnvPath = path.join(cwd, '.env');
 // const debugMode = process.env.xconfig || '';
 
 const HITN_TEXT = {
-  init: `请配置相关的文件\n${userHomeConfigPath}\n或者${cwdConfigPath}\n或者${cwdEnvPath}`,
-  emptyKey: `请配置相关的文件\n${userHomeConfigPath}\n或者${cwdConfigPath}\n或者${cwdEnvPath}\n%s`,
+  init: `请配置相关的文件\n${userHomeConfigPath}\n或者${cwdEnvPath}\n或者${cwdConfigPath}`,
+  emptyKey: `请配置相关的文件\n${userHomeConfigPath}\n或者${cwdEnvPath}\n或者${cwdConfigPath}\n%s`,
 };
 
 class Config {
@@ -75,6 +75,13 @@ class Config {
     const value = getValue(configValues, key);
     if (!value) {
       console.error(chalk.red(HITN_TEXT['emptyKey']), key);
+      console.log('.env sample');
+      console.log(key.toString() + '=你的值\n');
+
+      console.log('.xconfig.js sample');
+      console.log(`module.exports = {
+  '${key.toString()}': '你的值',
+}`);
       return '';
       // throw new Error('empty key');
     }
